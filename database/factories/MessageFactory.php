@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,10 +17,17 @@ class MessageFactory extends Factory
      */
     public function definition(): array
     {
+        $users = User::pluck('id')->toArray();
+
+        // Ensure there are users in the database
+        if (count($users) < 1) {
+            throw new \Exception("Not enough users to generate messages.");
+        }
         $senderId = $this->faker->randomElement([0,1]);
         if($senderId === 0){
-            $senderId = $this->faker->randomElement(\App\Models\User::where('id', '!=1')->pluck('id')->toArray());
+            // $senderId = $this->faker->randomElement(\App\Models\User::where('id', '!=1')->pluck('id')->toArray());
             $receiverId = 1;
+            $senderId = $this->faker->randomElement(array_diff($users, [$receiverId]));
         }else{
             $receiverId = $this->faker->randomElement(\App\Models\User::pluck('id')->toArray());
         }

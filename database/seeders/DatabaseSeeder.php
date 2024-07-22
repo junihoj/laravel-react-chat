@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
                 'user_id2'=>$groupedMessages->first()->receiver_id,
                 'last_message_id' => $groupedMessages->last()->id,
                 'created_at' => new Carbon(),
-                'update_at' => new Carbon(),
+                'updated_at' => new Carbon(),
 
             ];
         })->values();
