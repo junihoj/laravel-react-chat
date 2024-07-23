@@ -57,4 +57,8 @@ class Group extends Model
 
         ];
     }
+
+    public static function updateGroupWithMessage(){
+
+    }
 }

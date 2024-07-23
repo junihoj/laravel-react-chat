@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AuthenticatedLayout from './AuthenticatedLayout';
 import TextInput from '@/Components/TextInput';
 // import Echo from 'laravel-echo';
-import {PencilSquareIcon} from '@heroicons/react'
+import {PencilSquareIcon} from '@heroicons/react/24/solid'
 import ConversationItem from '@/Components/App/ConversationItem'
 const ChatLayout = ({ children}) => {
 
@@ -104,7 +104,7 @@ const ChatLayout = ({ children}) => {
                 selectedConversation ? '-ml-[100%] sm:ml-0': ""
                 }`}
             >
-                <div className='flex items-center justify-between py-2 px-3 text-xl font-medium'>
+                <div className='flex items-center justify-between py-2 px-3 text-xl font-medium text-gray-200'>
                     My Conversations
                     <div
                         className='tooltip tooltip-left'
@@ -120,7 +120,7 @@ const ChatLayout = ({ children}) => {
 
                 <div className='p-3'>
                     <TextInput
-                        onKeyUP={onSearch}
+                        onKeyUp={onSearch}
                         placeholder="Fliter users and groups"
                         className="w-full"
                     />

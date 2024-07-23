@@ -37,4 +37,9 @@ class Conversation extends Model
             return $group->toConversationArray();
         }));
     }
+
+
+    public static function updateConversationWithMessage(){
+
+    }
 }
