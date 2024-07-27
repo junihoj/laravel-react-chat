@@ -10,7 +10,7 @@ const ChatLayout = ({ children}) => {
     const page = usePage();
     const conversations = page.props.conversations;
     const selectedConversation = page.props.selectedConversation;
-    console.log("conversations", conversations)
+    // console.log("conversations", conversations)
     console.log("selected conversations", selectedConversation)
     const [onlineUsers, setOnlineUsers]  = useState({});
     const isUserOnline = (userId)=>onlineUsers[userId];

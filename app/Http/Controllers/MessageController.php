@@ -13,6 +13,7 @@ use App\Models\MessageAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class MessageController extends Controller
 {
     public function byUser(User $user){
@@ -30,7 +31,7 @@ class MessageController extends Controller
     }
 
     public function byGroup(Group $group){
-        $messages = Message::where('group_id', $group->id())
+        $messages = Message::where('group_id', $group->id)
         ->latest()
         ->paginate(10);
 
@@ -109,6 +110,9 @@ class MessageController extends Controller
         if($message->sender_id !== auth()->id()){
             return response()->json(['message'=> 'Forbidden'], 403);
         }
+        $message->delete();
+
+        return response("", 204);
     }
 
 }

@@ -3,7 +3,7 @@ import { EllipsisVerticalIcon, LockClosedIcon, LockOpenIcon, ShieldCheckIcon, Us
 import axios from 'axios'
 import React, { Fragment } from 'react'
 
-const UserOptionsDropdown = () => {
+const UserOptionsDropdown = ({conversation}) => {
     const changeUserRole = ()=>{
         if(!conversation.is_user){
             return;

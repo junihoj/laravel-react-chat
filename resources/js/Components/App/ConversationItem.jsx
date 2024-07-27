@@ -26,13 +26,19 @@ const ConversationItem = ({
             classes = "border-blue-500 bg-black/20"
         }
     }
+    let routeTo;
+    if(conversation.is_group){
+        console.log("CONVERSATION", conversation)
+        routeTo = route("chat.group", conversation)
+    }else{
+        routeTo = route("chat.user", conversation)
+    }
+    if(conversation.is_group){
+        console.log("ROUTE TO", routeTo)
+    }
     return(
         <Link
-            href={
-                conversation.is_group?
-                route("chat.group", conversation)
-                :route("chat.user", conversation)
-            }
+            href={routeTo}
             preserveState
             className={
                 "conversation-item flex items-center gap p-2 text-gray-300 transition-all" +
