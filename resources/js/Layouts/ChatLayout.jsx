@@ -5,17 +5,46 @@ import TextInput from '@/Components/TextInput';
 // import Echo from 'laravel-echo';
 import {PencilSquareIcon} from '@heroicons/react/24/solid'
 import ConversationItem from '@/Components/App/ConversationItem'
+import { useEventBus } from '@/EventBus';
 const ChatLayout = ({ children}) => {
 
     const page = usePage();
     const conversations = page.props.conversations;
     const selectedConversation = page.props.selectedConversation;
+    const {on} = useEventBus();
     // console.log("conversations", conversations)
     console.log("selected conversations", selectedConversation)
     const [onlineUsers, setOnlineUsers]  = useState({});
     const isUserOnline = (userId)=>onlineUsers[userId];
     const [localConversations, setLocacalConversations] = useState([]);
     const [sortedConversatons, setSortedConversations] = useState([]);
+
+    const messageCreated = (message)=>{
+        setLocacalConversations((oldUser)=>{
+            return oldUser.map((u)=>{
+                if(message.receiver_id && !u.is_group && (u.id==message.sender_id || u.id == message.receiver_id)){
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at;
+                    return u;
+                }
+
+                if(message.grou_id && u.is_group && u.id == message.group_id){
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at;
+                    return u;
+                }
+                return u;
+            })
+        })
+    }
+
+    useEffect(()=>{
+        const offCreated = on("message.created", messageCreated);
+
+        return ()=>{
+            offCreated();
+        }
+    },[on])
     useEffect(()=>{
         Echo.join('online')
         .here((users)=>{

@@ -1,21 +1,93 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ConversationHeader from '@/Components/App/ConversationHeader';
+import MessageInput from '@/Components/App/MessageInput';
 import MessageItem from '@/Components/App/MessageItem';
+import { useEventBus } from '@/EventBus';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ChatLayout from '@/Layouts/ChatLayout'
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
-import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 export default function Home({selectedConversation, messages }) {
     const [localMessages, setlocalMessages] = useState([]);
+    const [scrollFromBottom, setscrollFromBottom] = useState(0);
+    const [noMoreMessages, setNoMoreMessages] = useState(false)
     const messagesCtrRef = useRef(null);
+    const loadMoreIntersect = useRef(null);
+    const {on} = useEventBus();
 
+    const loadMoreMessages =useCallback(()=>{
+        if(noMoreMessages) return
+        const firstMessage = localMessages[0]
+        axios.get(route("message.loadOlder", firstMessage.id)).then(({data})=>{
+            if(data.data.length === 0){
+                setNoMoreMessages(true);
+                return;
+            }
+            //calculate how much is scrolled from bottom and scroll to the same position from bottom after messages are loaded
+            const scrollHeight = messagesCtrRef.current.scrollHeight;
+            const scrollTop = messagesCtrRef.current.scrollTop;
+            const clientHeight = messagesCtrRef.current.clientHeight;
+            const tmpScrollFromBottom = scrollHeight - scrollTop - clientHeight;
+            setscrollFromBottom(tmpScrollFromBottom);
+            setlocalMessages((prevMessages)=>{
+                return [...data.data.reverse(), ...prevMessages]
+            })
+        });
+    },[localMessages, noMoreMessages])
+    const messageCreated = (message)=>{
+        if(selectedConversation && selectedConversation.is_group && selectedConversation.id === message.group_id){
+            setlocalMessages((prevMessages)=>[...prevMessages, message]);
+        }
+
+        if(
+            selectedConversation &&
+            selectedConversation.is_user &&
+            selectedConversation.id === message.sender_id || selectedConversation.id == message.receiver_id
+        ){
+            setlocalMessages((prevMessages)=>[...prevMessages, message]);
+        }
+    }
     useEffect(()=>{
       setTimeout(()=>{
-        messagesCtrRef.current.scrollTop = messagesCtrRef.current.scrollHeight;
-      },10)
+        if(messagesCtrRef.current){
+            messagesCtrRef.current.scrollTop = messagesCtrRef.current.scrollHeight;
+        }
+      },100)
+     const offCreated =  on("message.created", messageCreated)
+     setscrollFromBottom(0)
+     setNoMoreMessages(false)
+     return ()=>{
+        offCreated();
+     }
     },[selectedConversation])
     useEffect(()=>{
         setlocalMessages(messages? messages.data.reverse(): [])
-    },[messages])
+    },[messages]);
+
+    useEffect(()=>{
+        if(messagesCtrRef.current && scrollFromBottom !==null){
+            messagesCtrRef.current.scrollTop = messagesCtrRef.current.scrollHeight - messagesCtrRef.current.offSetHeight - scrollFromBottom;
+        }
+
+        if(noMoreMessages){
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries)=> entries.forEach(
+                (entry)=>entry.isIntersecting && loadMoreMessages()
+            ),{rootMargin:"0px 0px 250px 0px"}
+        )
+        if(loadMoreIntersect.current){
+            setTimeout(()=>{
+                observer.observe(loadMoreIntersect.current);
+            },100)
+        }
+
+        return ()=>{
+            observer.disconnect();
+        };
+    },[localMessages])
     return (
         <>
         {!messages &&(
@@ -37,16 +109,18 @@ export default function Home({selectedConversation, messages }) {
                     )}
                     {localMessages.length > 0 && (
                         <div className='flex-1 flex flex-col'>
-                            {localMessages.map((message)=>(
-                                <MessageItem
-                                    key={message.id}
-                                    message={message}
-                                />
-                            ))}
-                        </div>
+                            <div ref={loadMoreIntersect}></div>
+                                {localMessages.map((message)=>(
+                                    <MessageItem
+                                        key={message.id}
+                                        message={message}
+                                    />
+                                ))}
+                            </div>
+
                     )}
                 </div>
-                {/* <MessageInput conversation={selectedConversation} /> */}
+                <MessageInput conversation={selectedConversation} />
             </>
         )}
 
