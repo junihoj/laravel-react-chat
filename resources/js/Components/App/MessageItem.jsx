@@ -3,8 +3,9 @@ import UserAvatar from './UserAvatar';
 import { formatMessageDateLong } from '@/helpers';
 import { usePage } from '@inertiajs/react';
 import ReactMarkdown from 'react-markdown'
+import MessageAttachments from './MessageAttachments';
 
-const MessageItem = ({message}) => {
+const MessageItem = ({message, attachmentClick}) => {
     const page = usePage();
     const currentUser = page.props.auth.user;
     return (
@@ -21,6 +22,10 @@ const MessageItem = ({message}) => {
                     <div className='chat-message-content'>
                         <ReactMarkdown>{message.message}</ReactMarkdown>
                     </div>
+                    <MessageAttachments
+                        attachments={message.attachments}
+                        attachmentClick={attachmentClick}
+                    />
                 </div>
             </div>
         </div>

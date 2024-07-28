@@ -11,6 +11,8 @@ export default function Home({selectedConversation, messages }) {
     const [localMessages, setlocalMessages] = useState([]);
     const [scrollFromBottom, setscrollFromBottom] = useState(0);
     const [noMoreMessages, setNoMoreMessages] = useState(false)
+    const [previewAttachment, setPreviewAttachment] = useState({})
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false)
     const messagesCtrRef = useRef(null);
     const loadMoreIntersect = useRef(null);
     const {on} = useEventBus();
@@ -46,6 +48,14 @@ export default function Home({selectedConversation, messages }) {
         ){
             setlocalMessages((prevMessages)=>[...prevMessages, message]);
         }
+    }
+
+    const onAttachmentClick = (attachments, ind)=>{
+        setPreviewAttachment(
+            attachments,
+            ind,
+        );
+        setShowAttachmentPreview(true);
     }
     useEffect(()=>{
       setTimeout(()=>{
@@ -114,6 +124,7 @@ export default function Home({selectedConversation, messages }) {
                                     <MessageItem
                                         key={message.id}
                                         message={message}
+                                        attachmentClick={onAttachmentClick}
                                     />
                                 ))}
                             </div>
@@ -123,7 +134,14 @@ export default function Home({selectedConversation, messages }) {
                 <MessageInput conversation={selectedConversation} />
             </>
         )}
-
+            {previewAttachment.attachments &&(
+                <AttachmentPreviewModal
+                    attachments={previewAttachment.attachments}
+                    index={previewAttachment.ind}
+                    show={showAttachmentPreview}
+                    onClose={()=>setShowAttachmentPreview(false)}
+                />
+            )}
         </>
     );
 }

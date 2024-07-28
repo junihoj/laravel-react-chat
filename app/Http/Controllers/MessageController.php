@@ -12,8 +12,7 @@ use App\Models\User;
 use App\Models\MessageAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
-
+use Illuminate\Support\Str;
 class MessageController extends Controller
 {
     public function byUser(User $user){
@@ -80,13 +79,14 @@ class MessageController extends Controller
                 Storage::makeDirectory($directory);
 
                 $model = [
-                    'message' => $message->id,
+                    'message_id' => $message->id,
                     'name' => $file->getClientOriginalName(),
                     'mime' => $file -> getClientMimeType(),
                     'size' => $file->getSize(),
                     'path' => $file->store($directory, 'public'),
                 ];
                 $attachment = MessageAttachment::create($model);
+                $attachments[] = $attachment;
             }
         }
 
