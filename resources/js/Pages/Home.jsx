@@ -7,6 +7,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ChatLayout from '@/Layouts/ChatLayout'
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
+
+// TODO: FIX ATTACHMENT PREVIEW
+//TODO: MULTIPLE ATTACHMENT SHOULD APPEAR IN TILES
 export default function Home({selectedConversation, messages }) {
     const [localMessages, setlocalMessages] = useState([]);
     const [scrollFromBottom, setscrollFromBottom] = useState(0);
