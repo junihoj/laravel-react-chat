@@ -14,7 +14,7 @@ export const CustomAudioPlayer = ({file, showVolume=true}) => {
             audio.pause();
         }else{
             setDuration(audio.duration);
-            audioplay();
+            audio.play();
         }
 
         setIsPlaying(!isPlaying);
