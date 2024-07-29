@@ -28,7 +28,7 @@ const ChatLayout = ({ children}) => {
                     return u;
                 }
 
-                if(message.grou_id && u.is_group && u.id == message.group_id){
+                if(message.group_id && u.is_group && u.id == message.group_id){
                     u.last_message = message.message;
                     u.last_message_date = message.created_at;
                     return u;
@@ -38,11 +38,35 @@ const ChatLayout = ({ children}) => {
         })
     }
 
+    const messageDeleted = ({prevMessage})=>{
+        if(!prevMessage){
+           return;
+        }
+
+        setLocacalConversations((oldUser)=>{
+            return oldUser.map((u)=>{
+                if(prevMessage.receiver_id  && !u.is_group && (u.id==message.sender_id || u.id == message.receiver_id)){
+                    u.last_message = prevMessage.message;
+                    u.last_message_date = prevMessage.created_at;
+                    return u;
+                }
+
+                if(prevMessage.group_id  && u.is_group && u.id == message.group_id){
+                    u.last_message = prevMessage.message;
+                    u.last_message_date = prevMessage.created_at;
+                    return u;
+                }
+                return u;
+            })
+        })
+    }
+
     useEffect(()=>{
         const offCreated = on("message.created", messageCreated);
-
+        const offDeleted = on("message.deleted", messageDeleted)
         return ()=>{
             offCreated();
+            offDeleted();
         }
     },[on])
     useEffect(()=>{
