@@ -9,15 +9,17 @@ import Toast from '@/Components/App/Toast';
 import NewMessageNotification from '@/Components/App/NewMessageNotification';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { UserPlusIcon } from '@heroicons/react/24/solid';
+import NewUserModal from '@/Components/App/NewUserModal';
 
 
 export default function Authenticated({ header, children }) {
     const page = usePage();
     const {emit} = useEventBus();
     const user = page.props.auth.user;
+    console.log("user objected", user)
     const conversations = page.props.conversations;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const [showNewUserModal, setShowNewUserModal] = useState(second)
+    const [showNewUserModal, setShowNewUserModal] = useState(false)
     useEffect(() => {
       conversations.forEach((conversation)=>{
         let channel = `message.group.${conversation.id}`;
@@ -200,6 +202,7 @@ export default function Authenticated({ header, children }) {
             </div>
             <Toast />
             <NewMessageNotification />
+            <NewUserModal show={showNewUserModal} onClose={(e)=>setShowNewUserModal(false)}/>
         </>
     );
 }

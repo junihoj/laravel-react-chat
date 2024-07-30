@@ -120,6 +120,7 @@ class MessageController extends Controller
            $conversation = Conversation::where('last_message_id', $message->id)->first();
         }
         $message->delete();
+        $lastMessage = null;
         if($group){
             $group = Group::find($group->id);
             $lastMessage = $group->lastMessage;

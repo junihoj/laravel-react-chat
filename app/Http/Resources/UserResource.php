@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'avatar'=> $this->avatar ? Storage::url($this->avatar) :null,
             'name' => $this->name,
             'email' => $this->email,
+            'is_admin' =>$this->is_admin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'last_message' => $this->last_message,
