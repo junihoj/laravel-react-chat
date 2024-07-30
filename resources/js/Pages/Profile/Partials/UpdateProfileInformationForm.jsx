@@ -8,15 +8,17 @@ import { Transition } from '@headlessui/react';
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
     const user = usePage().props.auth.user;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
+    const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
         email: user.email,
+        avatar:null,
+        _method:"PATCH"
     });
 
     const submit = (e) => {
         e.preventDefault();
 
-        patch(route('profile.update'));
+        post(route('profile.update'));
     };
 
     return (
@@ -30,6 +32,20 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
+                <div>
+                    <InputLabel htmlFor="avatar" value="Profile Picture" />
+
+                    <TextInput
+                        id="avatar"
+                        className="file-input file-input-bordered file-input-primary w-full max-w-xs"
+                        value={data.avatar}
+                        onChange={(e) => setData('avatar', e.target.files[0])}
+                        type="file"
+                    />
+                    <p className='mt-1 text-gray-400'>Please upload square picture</p>
+
+                    <InputError className="mt-2" message={errors.avatar} />
+                </div>
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 
